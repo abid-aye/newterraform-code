@@ -1,0 +1,39 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  terraformVersion: '1.9.8'
+
+steps:
+
+# Install Terraform
+- task: TerraformInstaller@1
+  displayName: 'Install Terraform'
+  inputs:
+    terraformVersion: '$(terraformVersion)'
+
+# Terraform Init
+- task: TerraformCLI@2
+  displayName: 'Terraform Init'
+  inputs:
+    command: 'init'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+
+# Terraform Plan
+- task: TerraformCLI@2
+  displayName: 'Terraform Plan'
+  inputs:
+    command: 'plan'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    commandOptions: '-out=tfplan'
+
+# Terraform Apply
+- task: TerraformCLI@2
+  displayName: 'Terraform Apply'
+  inputs:
+    command: 'apply'
+    workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+    commandOptions: 'tfplan'
